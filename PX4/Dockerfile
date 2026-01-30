@@ -1,5 +1,5 @@
 # PX4 base development environment
-FROM ubuntu:24.04
+FROM ubuntu:22.04
 LABEL maintainer="Daniel Agar <daniel@agar.ca>, Ramon Roche <mrpollo@gmail.com>"
 
 ENV DEBIAN_FRONTEND=noninteractive
