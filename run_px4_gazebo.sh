@@ -379,12 +379,12 @@ main() {
     fi
     
     # 如果需要重新编译
-    # if [ "$REBUILD" = true ]; then
-    #     build_px4
-    # fi
+    if [ "$REBUILD" = true ]; then
+        build_px4
+    fi
     
-    # 运行仿真
-    # run_simulation
+    运行仿真
+    run_simulation
     
     # 如果需要启动ROS2
     # if [ "$START_ROS" = true ]; then
