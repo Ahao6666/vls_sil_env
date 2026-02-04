@@ -6,7 +6,7 @@ set -e
 
 # 配置
 IMAGE_NAME="px4-gz:latest"
-CONTAINER_NAME="px4-dev"
+CONTAINER_NAME="px4-gz:latest"
 PX4_HOST_DIR="$HOME/vls_sil/PX4-Autopilot"
 WORKSPACE_DIR="/workspace/PX4-Autopilot"
 
