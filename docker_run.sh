@@ -19,11 +19,22 @@ SRC_DIR=$PWD/../
 CCACHE_DIR=${HOME}/.ccache
 mkdir -p "${CCACHE_DIR}"
 
+# Get container name from parameter (2nd argument)
+CONTAINER_NAME=${2:-}
+
+# Build docker command with optional container name
+if [ -n "$CONTAINER_NAME" ]; then
+	DOCKER_NAME_OPT="--name $CONTAINER_NAME"
+else
+	DOCKER_NAME_OPT=""
+fi
+
 docker run -it --rm -w "${SRC_DIR}" \
+	${DOCKER_NAME_OPT} \
 	--gpus all \
 	--user="$(id -u):$(id -g)" \
-        --device=/dev/dri \
-        --device /dev/fuse \
+	--device=/dev/dri \
+	--device /dev/fuse \
 	--env=AWS_ACCESS_KEY_ID \
 	--env=AWS_SECRET_ACCESS_KEY \
 	--env=BRANCH_NAME \
@@ -45,7 +56,7 @@ docker run -it --rm -w "${SRC_DIR}" \
 	--volume=${CCACHE_DIR}:${CCACHE_DIR}:rw \
 	--volume=${SRC_DIR}:${SRC_DIR}:rw \
 	--volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
-	${PX4_DOCKER_REPO} /bin/bash -c "$1 $2 $3"
+	${PX4_DOCKER_REPO} /bin/bash -c "$1"
 
 ###########################################
     # docker run -it \
