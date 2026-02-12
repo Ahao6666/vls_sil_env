@@ -4,15 +4,17 @@
 # ahao6666/ubuntu_ros2:v1.2 nvidia env
 # ahao6666/ubuntu_ros2:v1.3 QGC
 # ahao6666/ubuntu_ros2:v1.4 install_geographiclib_datasets
+# ahao6666/ubuntu_ros2:v1.5 AP gz models
+# ahao6666/ubuntu_ros2:v1.6 update models
 # otherwise default to nuttx
 if [ -z ${PX4_DOCKER_REPO+x} ]; then
-	PX4_DOCKER_REPO="ahao6666/ubuntu_ros2:v1.4"
+	PX4_DOCKER_REPO="ahao6666/ubuntu_ros2:v1.6"
 fi
 
 echo "PX4_DOCKER_REPO: $PX4_DOCKER_REPO";
 
 PWD=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-SRC_DIR=$PWD/
+SRC_DIR=$PWD/../
 
 CCACHE_DIR=${HOME}/.ccache
 mkdir -p "${CCACHE_DIR}"
@@ -46,20 +48,20 @@ docker run -it --rm -w "${SRC_DIR}" \
 	${PX4_DOCKER_REPO} /bin/bash -c "$1 $2 $3"
 
 ###########################################
-#     docker run -it \
-#         --env="DISPLAY" \
-#         --env="QT_X11_NO_MITSHM=1" \
-#         --env ROS_DOMAIN_ID=0 \
-#         --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
-#         --device=/dev/dri \
-#         --device /dev/fuse \
-#         --cap-add SYS_ADMIN \
-#         --security-opt apparmor:unconfined \
-#         --network=host \
-#         --privileged \
-#         --device=/dev/ttyUSB0 \
-#         --user insky \
-#         --name "container_1" \
-#         "ahao6666/ubuntu_ros2:v1.3" \
-#         bash -c "export DISPLAY=:0 && exec bash"
+    # docker run -it \
+    #     --env="DISPLAY" \
+    #     --env="QT_X11_NO_MITSHM=1" \
+    #     --env ROS_DOMAIN_ID=0 \
+    #     --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+    #     --device=/dev/dri \
+    #     --device /dev/fuse \
+    #     --cap-add SYS_ADMIN \
+    #     --security-opt apparmor:unconfined \
+    #     --network=host \
+    #     --privileged \
+    #     --device=/dev/ttyUSB0 \
+    #     --user insky \
+    #     --name "container_1" \
+    #     "ahao6666/ubuntu_ros2:v1.6" \
+    #     bash -c "export DISPLAY=:0 && exec bash"
 ########################################
