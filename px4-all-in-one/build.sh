@@ -4,10 +4,11 @@
 set -e
 
 # 配置
-IMAGE_NAME="px4-pip"
+# IMAGE_NAME="px4-pip"
+IMAGE_NAME="px4-all-in-one"
 IMAGE_TAG="latest"
-# DOCKERFILE="Dockerfile.px4-all-in-one"
-DOCKERFILE="Dockerfile.pip"
+DOCKERFILE="Dockerfile.px4-all-in-one"
+# DOCKERFILE="Dockerfile.pip"
 BUILD_CONTEXT="."
 
 echo "🔨 构建一体化PX4仿真镜像..."

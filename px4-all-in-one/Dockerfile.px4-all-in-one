@@ -16,16 +16,15 @@ ENV ftp_proxy=
 ENV HTTP_PROXY=
 ENV HTTPS_PROXY=
 ENV FTP_PROXY=
-ENV no_proxy=localhost,127.0.0.1
-ENV NO_PROXY=localhost,127.0.0.1
+ENV no_proxy=localhost,127.0.0.1,raw.githubusercontent.com
+ENV NO_PROXY=localhost,127.0.0.1,raw.githubusercontent.com
 
 # ==================== 配置国内镜像源 ====================
 RUN sed -i 's@http://.*archive.ubuntu.com@http://mirrors.aliyun.com@g' /etc/apt/sources.list && \
     sed -i 's@http://.*security.ubuntu.com@http://mirrors.aliyun.com@g' /etc/apt/sources.list
 
-# ==================== 更新包列表 ====================
-RUN apt-get update
-
+# ==================== 安装网络工具（可选） ====================
+RUN apt-get update && apt-get install -y dnsutils iproute2 && rm -rf /var/lib/apt/lists/*
 
 # ==================== 环境变量设置 ====================
 ENV DEBIAN_FRONTEND=noninteractive
@@ -100,10 +99,19 @@ RUN groupadd -g ${GROUP_ID} ${USERNAME} && \
     echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USERNAME} && \
     chmod 0440 /etc/sudoers.d/${USERNAME}
 
+# ==================== 关键修复：先以ROOT创建工作空间并授权 ====================
+# 必须在切换用户前，以root身份创建/workspace并设置权限
+RUN mkdir -p ${WORKSPACE} && \
+    chown -R ${USER_ID}:${GROUP_ID} ${WORKSPACE}
+
+# 切换到普通用户（此时/workspace已创建并授权）
 USER ${USERNAME}
 WORKDIR ${HOME}
 
 # ==================== 安装ROS2 Humble ====================
+RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu jammy main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
+
 RUN sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu jammy main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null && \
     sudo apt-get update && sudo apt-get install -y \
@@ -113,26 +121,19 @@ RUN sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.ke
     python3-rosdep \
     python3-vcstool \
     && sudo rm -rf /var/lib/apt/lists/*
+# RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+# RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu jammy main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
 
 # ==================== 安装Gazebo Harmonic ====================
 RUN sudo curl https://packages.osrfoundation.org/gazebo.gpg --output /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] https://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null && \
     sudo apt-get update && sudo apt-get install -y \
     gz-harmonic \
-    # ros-humble-ros-gzharmonic \
-    # libgz-sim8-dev \
-    # libgz-common5-dev \
-    # libgz-math7-dev \
-    # libgz-msgs10-dev \
-    # libgz-transport12-dev \
-    # libgz-rendering8-dev \
-    # libgz-gui8-dev \
-    # libgz-sensors8-dev \
-    # libgz-physics7-dev \
-    # libgz-plugin2-dev \
-    # libgz-fuel-tools9-dev \
-    # libgz-utils2-dev \
-    # gz-sim8-cli \
+    ros-humble-ros-gz \
+    ros-humble-ros-gz-sim \
+    ros-humble-ros-gz-bridge \
+    ros-humble-ros-gz-interfaces \
+    ros-humble-ros-ign \
     && sudo rm -rf /var/lib/apt/lists/*
 
 # ==================== 安装MAVROS和相关ROS包 ====================
@@ -142,23 +143,15 @@ RUN sudo apt-get update && sudo apt-get install -y \
     ros-humble-mavros-extras \
     ros-humble-geographic-msgs \
     ros-humble-geographic-info \
-    ros-humble-ros-gz \
-    ros-humble-ros-gz-sim \
-    ros-humble-ros-gz-bridge \
-    ros-humble-ros-gz-interfaces \
-    ros-humble-ros-ign \
     && sudo rm -rf /var/lib/apt/lists/*
 
-
-# ==================== 配置pip不使用代理 ====================
-# 创建pip配置文件，禁用代理
+# ==================== 配置pip国内源 ====================
 RUN mkdir -p ~/.pip && \
     echo "[global]" > ~/.pip/pip.conf && \
     echo "index-url = https://pypi.tuna.tsinghua.edu.cn/simple" >> ~/.pip/pip.conf && \
     echo "trusted-host = pypi.tuna.tsinghua.edu.cn" >> ~/.pip/pip.conf && \
     echo "timeout = 120" >> ~/.pip/pip.conf && \
-    echo "retries = 5" >> ~/.pip/pip.conf && \
-    echo "proxy = " >> ~/.pip/pip.conf
+    echo "retries = 5" >> ~/.pip/pip.conf
 
 # 设置pip环境变量（覆盖可能的全局设置）
 ENV PIP_DEFAULT_TIMEOUT=120 \
@@ -167,6 +160,9 @@ ENV PIP_DEFAULT_TIMEOUT=120 \
     PIP_TRUSTED_HOST=pypi.tuna.tsinghua.edu.cn \
     PIP_NO_PROXY=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# 4. 初始化rosdep
+RUN rosdep init && rosdep update
 
 # ==================== 安装Python包（使用国内源） ====================
 RUN pip3 install --upgrade pip --no-cache-dir && \
@@ -190,9 +186,30 @@ RUN pip3 install --upgrade pip --no-cache-dir && \
     --index-url https://pypi.tuna.tsinghua.edu.cn/simple \
     --trusted-host pypi.tuna.tsinghua.edu.cn
 
-# ==================== 初始化ROS ====================
-RUN sudo rosdep init && \
-    rosdep update
+# ==================== 修复ROSDEP（彻底绕开DNS） ====================
+# RUN sudo mkdir -p /etc/ros/rosdep/sources.list.d && \
+#     # 1. 删除已存在的20-default.list（解决文件已存在问题）
+#     sudo rm -f /etc/ros/rosdep/sources.list.d/20-default.list && \
+#     # 2. 直接写入国内镜像的配置（无需curl下载，避免DNS）
+#     sudo bash -c 'cat > /etc/ros/rosdep/sources.list.d/20-default.list << EOF
+#     # os-specific listings first
+#     yaml https://gitee.com/rosdistro/rosdistro/raw/master/rosdep/osx-homebrew.yaml osx
+
+#     # generic
+#     yaml https://gitee.com/rosdistro/rosdistro/raw/master/rosdep/base.yaml
+#     yaml https://gitee.com/rosdistro/rosdistro/raw/master/rosdep/python.yaml
+#     yaml https://gitee.com/rosdistro/rosdistro/raw/master/rosdep/ruby.yaml
+#     gbpdistro https://gitee.com/rosdistro/rosdistro/raw/master/releases/fuerte.yaml fuerte
+
+#     # newer distributions (Groovy, Hydro, ...) must not be listed anymore, they are being fetched from the rosdistro index.yaml instead
+#     EOF' && \
+#     # 3. 设置rosdistro索引为Gitee镜像（关键：避免访问GitHub）
+#     sudo bash -c 'echo "export ROSDISTRO_INDEX_URL=https://gitee.com/rosdistro/rosdistro/raw/master/index-v4.yaml" >> /etc/profile' && \
+#     # 4. 初始化rosdep（忽略错误）
+#     sudo rosdep init || true && \
+#     # 5. 执行rosdep update（忽略非关键错误，只保证humble相关源成功）
+#     export ROSDISTRO_INDEX_URL=https://gitee.com/rosdistro/rosdistro/raw/master/index-v4.yaml && \
+#     (rosdep update --rosdistro humble || echo "⚠️  rosdep update部分源失败，但不影响核心功能")
 
 # ==================== 设置工作空间 ====================
 RUN mkdir -p ${WORKSPACE} && \
@@ -201,6 +218,7 @@ RUN mkdir -p ${WORKSPACE} && \
 WORKDIR ${WORKSPACE}
 
 # ==================== 创建启动脚本 ====================
+# 从宿主机复制entrypoint.sh（build.sh会自动创建默认版本）
 COPY --chown=${USERNAME}:${USERNAME} entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
