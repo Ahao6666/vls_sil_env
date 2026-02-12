@@ -1,0 +1,35 @@
+# /zed/left_camera_link/image_raw publish
+- ros_topic_name: "/zed/left_camera_link/image_raw"
+  gz_topic_name: "/world/runway/model/alti_transition_quad/model/zed_camera/link/left_camera_link/sensor/imager/image"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+
+# /zed/left_camera_link/image_depth_raw publish
+- ros_topic_name: "/zed/left_camera_link/image_depth_raw"
+  gz_topic_name: "/world/runway/model/alti_transition_quad/model/zed_camera/link/left_camera_link/sensor/depth_imager/depth_image"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+
+# /zed/left_camera_link/camera_info publish
+- ros_topic_name: "/zed/left_camera_link/camera_info"
+  gz_topic_name: "/world/runway/model/alti_transition_quad/model/zed_camera/link/left_camera_link/sensor/imager/camera_info"
+  ros_type_name: "sensor_msgs/msg/CameraInfo"
+  gz_type_name: "gz.msgs.CameraInfo"
+
+# /zed/left_camera_link/depth_camera_info publish
+- ros_topic_name: "/zed/left_camera_link/depth_camera_info"
+  gz_topic_name: "/world/runway/model/alti_transition_quad/model/zed_camera/link/left_camera_link/sensor/depth_imager/camera_info"
+  ros_type_name: "sensor_msgs/msg/CameraInfo"
+  gz_type_name: "gz.msgs.CameraInfo"
+
+# /world/pose/info publish
+- ros_topic_name: "/world/pose/info"
+  gz_topic_name: "/world/runway/pose/info"
+  ros_type_name: "geometry_msgs/msg/PoseArray"
+  gz_type_name: "ignition.msgs.Pose_V"
+
+# /zed/camera_link/imu publish
+- ros_topic_name: "/zed/camera_link/imu"
+  gz_topic_name: "/world/runway/model/alti_transition_quad/model/zed_camera/link/camera_link/sensor/imu_sensor/imu"
+  ros_type_name: "sensor_msgs/msg/Imu"
+  gz_type_name: "gz.msgs.IMU"

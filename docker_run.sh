@@ -6,9 +6,11 @@
 # ahao6666/ubuntu_ros2:v1.4 install_geographiclib_datasets
 # ahao6666/ubuntu_ros2:v1.5 AP gz models
 # ahao6666/ubuntu_ros2:v1.6 update models
+# ahao6666/ubuntu_ros2:v1.7 ros-gz-bridge
+
 # otherwise default to nuttx
 if [ -z ${PX4_DOCKER_REPO+x} ]; then
-	PX4_DOCKER_REPO="ahao6666/ubuntu_ros2:v1.6"
+	PX4_DOCKER_REPO="ahao6666/ubuntu_ros2:v1.7"
 fi
 
 echo "PX4_DOCKER_REPO: $PX4_DOCKER_REPO";
@@ -29,7 +31,7 @@ else
 	DOCKER_NAME_OPT=""
 fi
 
-docker run -it --rm -w "${SRC_DIR}" \
+docker run -d --rm -w "${SRC_DIR}" \
 	${DOCKER_NAME_OPT} \
 	--gpus all \
 	--user="$(id -u):$(id -g)" \
@@ -73,6 +75,6 @@ docker run -it --rm -w "${SRC_DIR}" \
     #     --device=/dev/ttyUSB0 \
     #     --user insky \
     #     --name "container_1" \
-    #     "ahao6666/ubuntu_ros2:v1.6" \
+    #     "ahao6666/ubuntu_ros2:v1.7" \
     #     bash -c "export DISPLAY=:0 && exec bash"
 ########################################
