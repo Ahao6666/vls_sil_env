@@ -1,13 +1,5 @@
 #! /bin/bash
 
-# ahao6666/ubuntu_ros2:v1.1 PX4 make env
-# ahao6666/ubuntu_ros2:v1.2 nvidia env
-# ahao6666/ubuntu_ros2:v1.3 QGC
-# ahao6666/ubuntu_ros2:v1.4 install_geographiclib_datasets
-# ahao6666/ubuntu_ros2:v1.5 AP gz models
-# ahao6666/ubuntu_ros2:v1.6 update models
-# ahao6666/ubuntu_ros2:v1.7 ros-gz-bridge
-
 # otherwise default to nuttx
 if [ -z ${PX4_DOCKER_REPO+x} ]; then
 	PX4_DOCKER_REPO="ahao6666/ubuntu_ros2:v1.7"
