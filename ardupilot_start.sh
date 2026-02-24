@@ -16,7 +16,7 @@ echo "Starting Ardupilot SITL with Gazebo in container: $CONTAINER_NAME"
 ${SCRIPT_DIR}/docker_run.sh "sleep infinity" "$CONTAINER_NAME"
 
 # 根据 SIMULATION 执行不同的操作, iris, alti_transition, alti_transition_windy
-SIMULATION="alti_transition_windy"
+SIMULATION="iris"
 
 if [ "$SIMULATION" = "iris" ]; then
   # iris 模型的操作
@@ -30,9 +30,10 @@ if [ "$SIMULATION" = "iris" ]; then
   # 启动 ArduPilot 仿真
   sleep 2
   gnome-terminal -- bash -c "docker exec -it ap_container bash -i -c 'source ~/.bashrc && cd ~/src/ardupilot/ && sim_vehicle.py -v ArduCopter -f gazebo-iris --model JSON --out=127.0.0.1:14540'; exec bash"
-#   # 启动参数转发
-#   sleep 2
-#   gnome-terminal -- bash -c "docker cp config/config_ap_iris.yaml ap_container:/home/insky/ && docker exec -it ap_container bash -c 'export ROS_DOMAIN_ID=$DOMAIN_ID && source ~/.bashrc && ros2 run ros_gz_bridge parameter_bridge --ros-args -p config_file:=/home/insky/config_ap_iris.yaml'; exec bash"
+  # 启动参数转发
+  sleep 2
+  gnome-terminal -- bash -c "docker cp config/config_ap_iris.yaml ap_container:/home/insky/ && docker exec -it ap_container bash -c 'export ROS_DOMAIN_ID=0 && source /opt/ros/humble/setup.bash && ros2 run ros_gz_bridge parameter_bridge --ros-args -p config_file:=/home/insky/config_ap_iris.yaml'; exec bash"
+  # gnome-terminal -- bash -c "docker exec -it ap_container bash -c 'export ROS_DOMAIN_ID=0 && source /opt/ros/humble/setup.bash && ros2 run ros_gz_bridge parameter_bridge --ros-args -p config_file:=/home/insky/src/vls_sil_env/config/config_ap_iris.yaml'; exec bash"
 
 elif [ "$SIMULATION" = "alti_transition" ]; then
   # alti_transition 模型的操作
@@ -46,9 +47,9 @@ elif [ "$SIMULATION" = "alti_transition" ]; then
   # 启动 ArduPilot 仿真
   sleep 2
   gnome-terminal -- bash -c "docker exec -it ap_container bash -i -c 'source ~/.bashrc && cd ~/src/ardupilot/ && sim_vehicle.py -v ArduPlane --model JSON --add-param-file=/home/insky/src/ardupilot_gazebo/config/alti_transition_quad.param --out=127.0.0.1:14540'; exec bash"
-#   # 启动参数转发
-#   sleep 2
-#   gnome-terminal -- bash -c "docker cp config/config_ap_alti_transition_quad.yaml ap_container:/home/insky/ && docker exec -it ap_container bash -c 'export ROS_DOMAIN_ID=$DOMAIN_ID && source ~/.bashrc && ros2 run ros_gz_bridge parameter_bridge --ros-args -p config_file:=/home/insky/config_ap_alti_transition_quad.yaml'; exec bash"
+  # 启动参数转发
+  sleep 2
+  gnome-terminal -- bash -c "docker cp config/config_ap_alti_transition_quad.yaml ap_container:/home/insky/ && docker exec -it ap_container bash -c 'export ROS_DOMAIN_ID=0 && source ~/.bashrc && ros2 run ros_gz_bridge parameter_bridge --ros-args -p config_file:=/home/insky/config_ap_alti_transition_quad.yaml'; exec bash"
 
 elif [ "$SIMULATION" = "alti_transition_windy" ]; then
   # alti_transition_windy 模型的操作
@@ -62,16 +63,15 @@ elif [ "$SIMULATION" = "alti_transition_windy" ]; then
   # 启动 ArduPilot 仿真
   sleep 2
   gnome-terminal -- bash -c "docker exec -it ap_container bash -i -c 'source ~/.bashrc && cd ~/src/ardupilot/ && sim_vehicle.py -v ArduPlane --model JSON --add-param-file=/home/insky/src/ardupilot_gazebo/config/alti_transition_quad.param --out=127.0.0.1:14540'; exec bash"
-#   # 启动参数转发
-#   sleep 2
-#   gnome-terminal -- bash -c "docker cp config/config_ap_alti_transition_quad.yaml ap_container:/home/insky/ && docker exec -it ap_container bash -c 'export ROS_DOMAIN_ID=$DOMAIN_ID && source ~/.bashrc && ros2 run ros_gz_bridge parameter_bridge --ros-args -p config_file:=/home/insky/config_ap_alti_transition_quad.yaml'; exec bash"
+  # 启动参数转发
+  sleep 2
+  gnome-terminal -- bash -c "docker cp config/config_ap_alti_transition_quad.yaml ap_container:/home/insky/ && docker exec -it ap_container bash -c 'export ROS_DOMAIN_ID=0 && source ~/.bashrc && ros2 run ros_gz_bridge parameter_bridge --ros-args -p config_file:=/home/insky/config_ap_alti_transition_quad.yaml'; exec bash"
 
 else
   echo "未知的 SIMULATION: $SIMULATION"
   echo "支持的模式: iris, alti_transition, alti_transition_windy"
   exit 1
 fi
-
 
 # 启动 QGroundControl
 sleep 2

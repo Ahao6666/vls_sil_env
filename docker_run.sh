@@ -2,7 +2,7 @@
 
 # otherwise default to nuttx
 if [ -z ${PX4_DOCKER_REPO+x} ]; then
-	PX4_DOCKER_REPO="ahao6666/ubuntu_ros2:v1.7"
+	PX4_DOCKER_REPO="ahao6666/ubuntu_ros2:v1.8"
 fi
 
 echo "PX4_DOCKER_REPO: $PX4_DOCKER_REPO";
@@ -67,6 +67,6 @@ docker run -d --rm -w "${SRC_DIR}" \
     #     --device=/dev/ttyUSB0 \
     #     --user insky \
     #     --name "container_1" \
-    #     "ahao6666/ubuntu_ros2:v1.7" \
+    #     "ahao6666/ubuntu_ros2:v1.8" \
     #     bash -c "export DISPLAY=:0 && exec bash"
 ########################################

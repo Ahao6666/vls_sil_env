@@ -1,7 +1,8 @@
 
 |  版本编号 |  主要修改                            |  镜像大小   |  镜像ID          |上传时间 |
 | ---- | ---- | ---- |----|----|
-|   v1.7   |   ros-gz-bridge 有问题              |   11.7GB   |  d351e4b7d241   |  2026-02-13   |
+|   v1.8   |   修复gz到ros话题转发bug              |   12.2GB   |  44828737bf91   |  2026-02-24   |
+|   v1.7   |   ros-gz-bridge              |   11.7GB   |  d351e4b7d241   |  2026-02-13   |
 |   v1.6   |   update models                    |   11.6GB   |  b17c73ef16ec   |  2026-02-12   |
 |   v1.5   |   AP gz models                     |   11.1GB   |  3d9672791da1   |  2026-02-11   |
 |   v1.4   |   install_geographiclib_datasets   |   10.5GB   |  51aa66c8cfe7   |  2026-02-11   |
