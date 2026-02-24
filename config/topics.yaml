@@ -1,0 +1,18 @@
+# MAVROS <-> Telemetry 话题名配置
+# 修改此文件以更改输入/输出话题名
+topics:
+  input:
+    imu: '/mavros/imu/data'
+    pose: '/mavros/local_position/pose'
+    vel_body: '/mavros/local_position/velocity_body'
+    global: '/mavros/global_position/global'
+    local_vel: '/mavros/local_position/velocity_local'
+    battery: '/mavros/battery'
+  output:
+    attitude: '/telemetry/attitude'
+    vel_body: '/telemetry/vel_body'
+    global: '/telemetry/global_position/global'
+    angular_rate: '/telemetry/angular_rate'
+    local_vel: '/telemetry/local_position/vel'
+    accel: '/telemetry/accel'
+    battery_state: '/telemetry/battery_state'

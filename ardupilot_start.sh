@@ -34,7 +34,6 @@ if [ "$SIMULATION" = "iris" ]; then
   sleep 2
   gnome-terminal -- bash -c "docker cp config/config_ap_iris.yaml ap_container:/home/insky/ && docker exec -it ap_container bash -c 'export ROS_DOMAIN_ID=0 && source /opt/ros/humble/setup.bash && ros2 run ros_gz_bridge parameter_bridge --ros-args -p config_file:=/home/insky/config_ap_iris.yaml'; exec bash"
   # gnome-terminal -- bash -c "docker exec -it ap_container bash -c 'export ROS_DOMAIN_ID=0 && source /opt/ros/humble/setup.bash && ros2 run ros_gz_bridge parameter_bridge --ros-args -p config_file:=/home/insky/src/vls_sil_env/config/config_ap_iris.yaml'; exec bash"
-
 elif [ "$SIMULATION" = "alti_transition" ]; then
   # alti_transition 模型的操作
   echo "启动 alti_transition 模型相关组件..."
@@ -79,6 +78,10 @@ gnome-terminal -- bash -c "docker exec -it ap_container bash -i -c 'export ROS_D
 # 启动 mavros
 sleep 10
 gnome-terminal -- bash -c "docker exec -it ap_container bash -i -c 'export ROS_DOMAIN_ID=0 && ros2 launch mavros apm.launch fcu_url:=tcp://127.0.0.1:5762\'; exec bash"
+
+# mavros话题转发到telemetry
+sleep 5
+gnome-terminal -- bash -c "docker exec -it ap_container bash -i -c 'export ROS_DOMAIN_ID=0 && source ~/.bashrc && python3 ~/src/vls_sil_env/scripts/mavros2telemetry.py'; exec bash"
 
 # 设置mavros话题发布频率-默认30Hz
 sleep 2
