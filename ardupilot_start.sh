@@ -49,8 +49,7 @@ elif [ "$SIMULATION" = "alti_transition" ]; then
   gnome-terminal -- bash -c "docker exec -it ap_container bash -i -c 'source ~/.bashrc && cd ~/src/ardupilot/ && sim_vehicle.py -v ArduPlane --model JSON --add-param-file=/home/insky/src/ardupilot_gazebo/config/alti_transition_quad.param --out=127.0.0.1:14540'; exec bash"
   # 启动参数转发
   sleep 2
-  gnome-terminal -- bash -c "docker cp config/config_ap_alti_transition_quad.yaml ap_container:/home/insky/ && docker exec -it ap_container bash -c 'export ROS_DOMAIN_ID=0 && source ~/.bashrc && ros2 run ros_gz_bridge parameter_bridge --ros-args -p config_file:=/home/insky/config_ap_alti_transition_quad.yaml'; exec bash"
-
+  gnome-terminal -- bash -c "docker cp config/config_ap_alti_transition_quad.yaml ap_container:/home/insky/ && docker exec -it ap_container bash -c 'export ROS_DOMAIN_ID=0 && source /opt/ros/humble/setup.bash && ros2 run ros_gz_bridge parameter_bridge --ros-args -p config_file:=/home/insky/config_ap_alti_transition_quad.yaml'; exec bash"
 elif [ "$SIMULATION" = "alti_transition_windy" ]; then
   # alti_transition_windy 模型的操作
   echo "启动 alti_transition_windy 模型相关组件..."
@@ -65,7 +64,7 @@ elif [ "$SIMULATION" = "alti_transition_windy" ]; then
   gnome-terminal -- bash -c "docker exec -it ap_container bash -i -c 'source ~/.bashrc && cd ~/src/ardupilot/ && sim_vehicle.py -v ArduPlane --model JSON --add-param-file=/home/insky/src/ardupilot_gazebo/config/alti_transition_quad.param --out=127.0.0.1:14540'; exec bash"
   # 启动参数转发
   sleep 2
-  gnome-terminal -- bash -c "docker cp config/config_ap_alti_transition_quad.yaml ap_container:/home/insky/ && docker exec -it ap_container bash -c 'export ROS_DOMAIN_ID=0 && source ~/.bashrc && ros2 run ros_gz_bridge parameter_bridge --ros-args -p config_file:=/home/insky/config_ap_alti_transition_quad.yaml'; exec bash"
+  gnome-terminal -- bash -c "docker cp config/config_ap_alti_transition_quad.yaml ap_container:/home/insky/ && docker exec -it ap_container bash -c 'export ROS_DOMAIN_ID=0 && source /opt/ros/humble/setup.bash && ros2 run ros_gz_bridge parameter_bridge --ros-args -p config_file:=/home/insky/config_ap_alti_transition_quad.yaml'; exec bash"
 
 else
   echo "未知的 SIMULATION: $SIMULATION"
@@ -75,12 +74,12 @@ fi
 
 # 启动 QGroundControl
 sleep 2
-gnome-terminal -- bash -c "docker exec -it ap_container bash -i -c 'export ROS_DOMAIN_ID=$DOMAIN_ID && cd ~/ && ./QGroundControl-x86_64.AppImage'; exec bash"
+gnome-terminal -- bash -c "docker exec -it ap_container bash -i -c 'export ROS_DOMAIN_ID=0 && cd ~/ && ./QGroundControl-x86_64.AppImage'; exec bash"
 
 # 启动 mavros
 sleep 10
-gnome-terminal -- bash -c "docker exec -it ap_container bash -i -c 'export ROS_DOMAIN_ID=$DOMAIN_ID && ros2 launch mavros apm.launch fcu_url:=tcp://127.0.0.1:5762\'; exec bash"
+gnome-terminal -- bash -c "docker exec -it ap_container bash -i -c 'export ROS_DOMAIN_ID=0 && ros2 launch mavros apm.launch fcu_url:=tcp://127.0.0.1:5762\'; exec bash"
 
 # 设置mavros话题发布频率-默认30Hz
 sleep 2
-gnome-terminal -- bash -c "docker exec -it ap_container bash -i -c \"export ROS_DOMAIN_ID=$DOMAIN_ID && ros2 service call /mavros/set_stream_rate mavros_msgs/srv/StreamRate '{stream_id: 0, message_rate: 30, on_off: true}'\"; exec bash"
+gnome-terminal -- bash -c "docker exec -it ap_container bash -i -c \"export ROS_DOMAIN_ID=0 && ros2 service call /mavros/set_stream_rate mavros_msgs/srv/StreamRate '{stream_id: 0, message_rate: 30, on_off: true}'\"; exec bash"
